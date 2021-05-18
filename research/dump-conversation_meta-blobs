@@ -1,0 +1,18 @@
+#!/usr/bin/python3
+# takes path to arroyo.db as single argument
+
+import sqlite3
+import sys
+
+filename = sys.argv[1]
+query = """select client_conversation_id,conversation_metadata
+           from conversation"""
+
+with sqlite3.connect(filename) as conn:
+    conn.row_factory = sqlite3.Row
+
+    c = conn.cursor()
+    for r in c.execute(query):
+        ccid = r['client_conversation_id']
+        with open(f'blobs/conversation/{ccid}', 'wb') as f:
+            f.write(r['conversation_metadata'])

@@ -1,0 +1,22 @@
+#!/usr/bin/python3
+# takes path to main.db as single argument
+
+import json
+import sqlite3
+import sys
+
+filename = sys.argv[1]
+
+with sqlite3.connect(filename) as conn:
+	conn.row_factory = sqlite3.Row
+
+	contacts = {}
+	c = conn.cursor()
+	for r in c.execute("select username,userId,displayName from Friend"):
+		contacts[r['userId']] = {
+			'username': r['username'],
+			'display':  r['displayName'],
+		}
+
+	with open('contacts.json', 'w') as f:
+		f.write(json.dumps(contacts))

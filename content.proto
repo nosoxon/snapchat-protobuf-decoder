@@ -1,0 +1,148 @@
+syntax = "proto3";
+
+message root {
+  int32          server_message_id    = 1;
+  Sender         sender               = 2;
+  Conversation   conversation         = 3;
+  Contents       contents             = 4;
+  ImpressionMeta impression           = 6;
+  int64          client_resolution_id = 7;
+  ServerMetadata server_meta          = 9;
+}
+
+message Sender {
+  bytes id = 1;
+}
+
+message Conversation {
+  ConversationMeta meta = 1;
+}
+
+message ConversationMeta {
+  ConversationID id      = 1;
+  int64          version = 2;
+}
+
+message ConversationID {
+  bytes id = 1;
+}
+
+message ImpressionMeta {
+  int64  created_at = 1;
+  int64  read_at    = 2;
+  UserID read_by    = 4;
+  UserID saved_by   = 6;
+  int64  version_id = 11;
+}
+
+message UserID {
+  bytes id = 1;
+}
+
+message ServerMetadata {
+  ServerMessage msg = 1;
+}
+
+message ServerMessage {
+  bytes id = 1;
+}
+
+message Contents {
+  enum ContentType {
+    UNKNOWN      = 0;
+    MESSAGE      = 1;
+    VIDEO        = 2;
+    SNAP_CONTACT = 3;
+  }
+
+  ContentType type    = 2;
+  Payload     payload = 4;
+  ContentMeta meta    = 5;
+}
+
+message Payload {
+  MessagePayload     message      = 2;
+  SnapContactPayload snap_contact = 5;
+  SnapPayload        snap         = 11;
+}
+
+message MessagePayload {
+  string text = 1;
+}
+
+message SnapContactPayload {
+  SCP_L2 s = 7;
+}
+
+message SCP_L2 {
+  SCP_L3 s = 1;
+}
+
+message SCP_L3 {
+  bytes contact_id = 1;
+}
+
+message ContentMeta {
+  ContentMetaPayload payload = 1;
+}
+
+message ContentMetaPayload {
+  ContentObject obj = 3;
+  int32         x   = 8;
+}
+
+message ContentObject {
+  ContentObjectMeta meta = 2;
+}
+
+message ContentObjectMeta {
+  string     id = 2;
+  TimestampS ts = 4;
+  int32      x  = 9;
+  int32      y  = 10;
+  int32      z  = 12;
+}
+
+message TimestampS {
+  uint64 value = 1;
+}
+
+message SnapPayload {
+  Snap snap = 5;
+}
+
+message Snap {
+  SnapPacket packet = 1;
+}
+
+message SnapPacket {
+  PhotoPacket photo = 1;
+  TextPacket  text  = 2;
+}
+
+message PhotoPacket {
+  int32           x             = 2;
+  KeyIV64         key_iv_base64 = 4;
+  PhotoResolution resolution    = 5;
+  int32           y             = 12;
+  KeyIVRaw        key_iv_raw    = 19;
+}
+
+message TextPacket {
+  string content = 1;
+}
+
+message KeyIV64 {
+  string key = 1;
+  string iv  = 2;
+}
+
+message PhotoResolution {
+  int32 width  = 1;
+  int32 height = 2;
+}
+
+message KeyIVRaw {
+  bytes key = 1;
+  bytes iv  = 2;
+}

@@ -1,0 +1,21 @@
+#!/usr/bin/python3
+# takes path to any sqlite3 db for greppable output
+
+import sqlite3
+import sys
+
+filename = sys.argv[1]
+
+with sqlite3.connect(filename) as conn:
+    conn.row_factory = sqlite3.Row
+
+    cursor = conn.cursor()
+    cursor.execute("select name from sqlite_master where type='table'")
+
+    for tablerow in cursor.fetchall():
+        table = tablerow[0]
+        cursor.execute(f'select * from {table}')
+
+        for row in cursor:
+            for field in row.keys():
+                print(table, field, row[field])

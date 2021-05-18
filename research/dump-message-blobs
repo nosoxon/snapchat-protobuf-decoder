@@ -1,0 +1,16 @@
+#!/usr/bin/python3
+# takes path to arroyo.db as single argument
+
+import sqlite3
+import sys
+
+filename = sys.argv[1]
+
+with sqlite3.connect(filename) as conn:
+    conn.row_factory = sqlite3.Row
+
+    c = conn.cursor()
+    for r in c.execute("select * from conversation_message"):
+        name_id = str(r['client_message_id']).zfill(4)
+        with open(f'blobs/{name_id}', 'wb') as f:
+            f.write(r['message_content'])
